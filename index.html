@@ -6,16 +6,11 @@
   <title>Slide Renderer</title>
 
   <!-- React 18 -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 
-  <!-- Sucrase: in-browser JSX/TS transpiler -->
-  <script>var module = { exports: {} };</script>
-  <script src="https://unpkg.com/sucrase@3.35.0/dist/sucrase.js"></script>
-  <script>var Sucrase = module.exports; module = undefined;</script>
-
-  <!-- Lucide icons (optional, available to slides) -->
-  <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
+  <!-- Babel standalone: battle-tested in-browser JSX/TS transpiler -->
+  <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 
   <!-- Recharts (optional, available to slides) -->
   <script crossorigin src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
@@ -53,7 +48,7 @@
       overflow: hidden;
     }
 
-    /* ---- Drop Zone (landing) ---- */
+    /* ---- Drop Zone ---- */
     #landing {
       display: flex;
       flex-direction: column;
@@ -61,8 +56,6 @@
       justify-content: center;
       height: 100%;
       gap: 24px;
-      position: relative;
-      transition: opacity 0.35s ease;
     }
     #landing.hidden { display: none; }
 
@@ -77,7 +70,7 @@
       justify-content: center;
       gap: 16px;
       cursor: pointer;
-      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+      transition: border-color 0.2s, transform 0.2s;
       position: relative;
       overflow: hidden;
     }
@@ -96,272 +89,138 @@
     .drop-zone:hover::before, .drop-zone.drag-over::before { opacity: 1; }
 
     .drop-icon {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
+      width: 56px; height: 56px; border-radius: 50%;
       background: var(--accent-dim);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      z-index: 1;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; z-index: 1;
     }
     .drop-icon svg { stroke: var(--accent); }
-
     .drop-label { font-size: 18px; font-weight: 500; z-index: 1; }
     .drop-sub { font-size: 13px; color: var(--text-muted); z-index: 1; }
 
-    .brand {
-      font-family: var(--display);
-      font-size: 28px;
-      font-weight: 900;
-      letter-spacing: -0.5px;
-    }
+    .brand { font-family: var(--display); font-size: 28px; font-weight: 900; letter-spacing: -0.5px; }
     .brand span { color: var(--accent); }
 
     .help-text {
-      max-width: 480px;
-      text-align: center;
-      font-size: 13px;
-      color: var(--text-muted);
-      line-height: 1.7;
+      max-width: 480px; text-align: center;
+      font-size: 13px; color: var(--text-muted); line-height: 1.7;
     }
     .help-text code {
-      font-family: var(--mono);
-      font-size: 12px;
-      background: var(--bg-card);
-      padding: 2px 6px;
-      border-radius: 4px;
-      border: 1px solid var(--border);
+      font-family: var(--mono); font-size: 12px;
+      background: var(--bg-card); padding: 2px 6px;
+      border-radius: 4px; border: 1px solid var(--border);
     }
 
     /* ---- Presenter ---- */
-    #presenter {
-      display: none;
-      height: 100%;
-      flex-direction: column;
-    }
+    #presenter { display: none; height: 100%; flex-direction: column; }
     #presenter.active { display: flex; }
 
     .toolbar {
-      height: 52px;
-      background: var(--bg-surface);
+      height: 52px; background: var(--bg-surface);
       border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      padding: 0 16px;
-      gap: 12px;
-      flex-shrink: 0;
+      display: flex; align-items: center; padding: 0 16px; gap: 12px; flex-shrink: 0;
     }
-    .toolbar-brand {
-      font-family: var(--display);
-      font-size: 16px;
-      font-weight: 700;
-    }
+    .toolbar-brand { font-family: var(--display); font-size: 16px; font-weight: 700; }
     .toolbar-brand span { color: var(--accent); }
-    .toolbar-sep {
-      width: 1px;
-      height: 24px;
-      background: var(--border);
-    }
+    .toolbar-sep { width: 1px; height: 24px; background: var(--border); }
     .toolbar-file {
-      font-family: var(--mono);
-      font-size: 12px;
-      color: var(--text-muted);
-      background: var(--bg-card);
-      padding: 4px 10px;
-      border-radius: 6px;
+      font-family: var(--mono); font-size: 12px; color: var(--text-muted);
+      background: var(--bg-card); padding: 4px 10px; border-radius: 6px;
       border: 1px solid var(--border);
-      max-width: 240px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
     .toolbar-spacer { flex: 1; }
-    .toolbar-slide-count {
-      font-family: var(--mono);
-      font-size: 13px;
-      color: var(--text-muted);
-    }
+    .toolbar-slide-count { font-family: var(--mono); font-size: 13px; color: var(--text-muted); }
 
     .btn {
-      height: 34px;
-      padding: 0 14px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: var(--bg-card);
-      color: var(--text);
-      font-family: var(--sans);
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      height: 34px; padding: 0 14px;
+      border: 1px solid var(--border); border-radius: 8px;
+      background: var(--bg-card); color: var(--text);
+      font-family: var(--sans); font-size: 13px; font-weight: 500;
+      cursor: pointer; display: flex; align-items: center; gap: 6px;
       transition: border-color 0.15s, background 0.15s;
     }
     .btn:hover { border-color: var(--border-hover); background: var(--bg-surface); }
     .btn.accent { border-color: var(--accent); color: var(--accent); }
     .btn.accent:hover { background: var(--accent-dim); }
 
-    /* Slide viewport */
     .slide-viewport {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      background: var(--bg);
-      position: relative;
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      overflow: hidden; background: var(--bg); position: relative;
     }
-
     .slide-frame {
-      width: 960px;
-      height: 540px;
-      background: #fff;
-      border-radius: 6px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
-      overflow: hidden;
-      transform-origin: center center;
-      position: relative;
+      width: 960px; height: 540px; background: #fff;
+      border-radius: 6px; box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+      overflow: hidden; transform-origin: center center; position: relative;
     }
-
     .slide-frame.fullscreen {
-      width: 100vw !important;
-      height: 100vh !important;
-      border-radius: 0;
-      box-shadow: none;
+      width: 100vw !important; height: 100vh !important;
+      border-radius: 0; box-shadow: none;
     }
+    .slide-content { width: 100%; height: 100%; overflow: auto; }
 
-    .slide-content {
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-    }
-
-    /* Nav arrows */
     .nav-arrow {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background 0.15s, border-color 0.15s;
-      z-index: 10;
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--bg-card); border: 1px solid var(--border);
+      color: var(--text); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background 0.15s, border-color 0.15s; z-index: 10;
     }
     .nav-arrow:hover { background: var(--bg-surface); border-color: var(--border-hover); }
     .nav-arrow.disabled { opacity: 0.3; pointer-events: none; }
     .nav-arrow.left { left: 20px; }
     .nav-arrow.right { right: 20px; }
 
-    /* Bottom bar / thumbnail strip */
     .thumb-strip {
-      height: 72px;
-      background: var(--bg-surface);
+      height: 72px; background: var(--bg-surface);
       border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0 16px;
-      overflow-x: auto;
-      flex-shrink: 0;
+      display: flex; align-items: center; gap: 8px;
+      padding: 0 16px; overflow-x: auto; flex-shrink: 0;
     }
-    .thumb-strip::-webkit-scrollbar { height: 4px; }
-    .thumb-strip::-webkit-scrollbar-track { background: transparent; }
-    .thumb-strip::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
     .thumb {
-      flex-shrink: 0;
-      width: 80px;
-      height: 48px;
-      border-radius: 6px;
-      border: 2px solid transparent;
-      background: var(--bg-card);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--text-muted);
+      flex-shrink: 0; width: 80px; height: 48px; border-radius: 6px;
+      border: 2px solid transparent; background: var(--bg-card);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 11px; color: var(--text-muted);
       transition: border-color 0.15s, background 0.15s;
     }
     .thumb:hover { border-color: var(--border-hover); }
     .thumb.active { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); }
 
-    /* Error overlay */
     .error-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 40px;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+      z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 40px;
     }
     .error-box {
-      background: var(--bg-card);
-      border: 1px solid var(--danger);
-      border-radius: var(--radius);
-      padding: 32px;
-      max-width: 640px;
-      width: 100%;
+      background: var(--bg-card); border: 1px solid var(--danger);
+      border-radius: var(--radius); padding: 32px; max-width: 640px; width: 100%;
     }
-    .error-box h3 {
-      color: var(--danger);
-      font-size: 16px;
-      margin-bottom: 12px;
-    }
+    .error-box h3 { color: var(--danger); font-size: 16px; margin-bottom: 12px; }
     .error-box pre {
-      font-family: var(--mono);
-      font-size: 12px;
-      color: var(--text-muted);
-      background: var(--bg);
-      padding: 16px;
-      border-radius: 8px;
-      overflow-x: auto;
-      white-space: pre-wrap;
-      word-break: break-word;
-      max-height: 300px;
-      overflow-y: auto;
+      font-family: var(--mono); font-size: 12px; color: var(--text-muted);
+      background: var(--bg); padding: 16px; border-radius: 8px;
+      overflow-x: auto; white-space: pre-wrap; word-break: break-word;
+      max-height: 300px; overflow-y: auto;
     }
     .error-box .btn { margin-top: 16px; }
 
-    /* Fullscreen overrides */
-    .fullscreen-mode .toolbar,
-    .fullscreen-mode .thumb-strip { display: none; }
+    .fullscreen-mode .toolbar, .fullscreen-mode .thumb-strip { display: none; }
     .fullscreen-mode .slide-viewport { height: 100%; }
 
-    /* Responsive scaling */
-    @media (max-width: 1100px) {
-      .slide-frame { transform: scale(0.75); }
-    }
-    @media (max-width: 800px) {
-      .slide-frame { transform: scale(0.55); }
-    }
+    @media (max-width: 1100px) { .slide-frame { transform: scale(0.75); } }
+    @media (max-width: 800px)  { .slide-frame { transform: scale(0.55); } }
   </style>
 </head>
 <body>
 
 <div id="root">
-  <!-- Landing / Drop Zone -->
   <div id="landing">
     <div class="brand">Slide<span>.</span>tsx</div>
     <div class="drop-zone" id="dropZone">
       <div class="drop-icon">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-          <polyline points="17 8 12 3 7 8"/>
-          <line x1="12" y1="3" x2="12" y2="15"/>
+          <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
         </svg>
       </div>
       <div class="drop-label">Drop a .tsx slide file</div>
@@ -369,15 +228,13 @@
     </div>
     <div class="help-text">
       Your <code>.tsx</code> file should default-export a React component.
-      Each child of the top-level element becomes a slide.
-      Wrap slides in <code>&lt;div&gt;</code> elements inside a fragment or wrapper.
+      Each direct child of the returned JSX becomes a slide.
       <br/><br/>
-      Available globals: <code>React</code>, <code>useState</code>, <code>useEffect</code>, <code>useRef</code>, <code>Recharts</code>
+      Available: <code>React</code>, <code>useState</code>, <code>useEffect</code>, <code>useRef</code>, <code>Recharts</code>
     </div>
     <input type="file" id="fileInput" accept=".tsx,.jsx,.ts,.js" hidden />
   </div>
 
-  <!-- Presenter -->
   <div id="presenter">
     <div class="toolbar">
       <div class="toolbar-brand">Slide<span>.</span>tsx</div>
@@ -391,31 +248,25 @@
           <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
         </svg>
       </button>
-      <button class="btn accent" id="btnNewFile">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
-        </svg>
-        New File
-      </button>
+      <button class="btn accent" id="btnNewFile">New File</button>
     </div>
     <div class="slide-viewport" id="slideViewport">
       <button class="nav-arrow left" id="navLeft">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
       <div class="slide-frame" id="slideFrame">
         <div class="slide-content" id="slideContent"></div>
       </div>
       <button class="nav-arrow right" id="navRight">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
     </div>
     <div class="thumb-strip" id="thumbStrip"></div>
   </div>
 
-  <!-- Error overlay (hidden by default) -->
   <div class="error-overlay" id="errorOverlay" style="display:none">
     <div class="error-box">
-      <h3>Transpilation / Render Error</h3>
+      <h3>Error</h3>
       <pre id="errorMessage"></pre>
       <button class="btn" id="btnDismissError">Dismiss</button>
     </div>
@@ -424,265 +275,211 @@
 
 <script>
 (function() {
-  // ── State ──
-  let slides = [];
-  let currentSlide = 0;
-  let isFullscreen = false;
+  var slides = [];
+  var currentSlide = 0;
+  var isFullscreen = false;
+  var slideRoot = null;
 
-  // ── DOM refs ──
-  const landing      = document.getElementById('landing');
-  const presenter     = document.getElementById('presenter');
-  const dropZone      = document.getElementById('dropZone');
-  const fileInput     = document.getElementById('fileInput');
-  const slideContent  = document.getElementById('slideContent');
-  const slideFrame    = document.getElementById('slideFrame');
-  const slideViewport = document.getElementById('slideViewport');
-  const thumbStrip    = document.getElementById('thumbStrip');
-  const slideCountEl  = document.getElementById('slideCount');
-  const fileNameEl    = document.getElementById('fileName');
-  const navLeft       = document.getElementById('navLeft');
-  const navRight      = document.getElementById('navRight');
-  const btnFullscreen = document.getElementById('btnFullscreen');
-  const btnNewFile    = document.getElementById('btnNewFile');
-  const errorOverlay  = document.getElementById('errorOverlay');
-  const errorMessage  = document.getElementById('errorMessage');
-  const btnDismissErr = document.getElementById('btnDismissError');
+  var $ = function(id) { return document.getElementById(id); };
 
-  // ── Drop zone events ──
-  dropZone.addEventListener('click', () => fileInput.click());
-  fileInput.addEventListener('change', (e) => {
-    if (e.target.files.length) handleFile(e.target.files[0]);
-  });
+  var landing      = $('landing');
+  var presenter    = $('presenter');
+  var dropZone     = $('dropZone');
+  var fileInput    = $('fileInput');
+  var slideContent = $('slideContent');
+  var slideFrame   = $('slideFrame');
+  var thumbStrip   = $('thumbStrip');
+  var slideCountEl = $('slideCount');
+  var fileNameEl   = $('fileName');
+  var navLeft      = $('navLeft');
+  var navRight     = $('navRight');
+  var btnFS        = $('btnFullscreen');
+  var btnNew       = $('btnNewFile');
+  var errOverlay   = $('errorOverlay');
+  var errMsg       = $('errorMessage');
+  var errDismiss   = $('btnDismissError');
 
-  ['dragenter','dragover'].forEach(ev => {
-    dropZone.addEventListener(ev, (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-  });
-  ['dragleave','drop'].forEach(ev => {
-    dropZone.addEventListener(ev, (e) => { e.preventDefault(); dropZone.classList.remove('drag-over'); });
-  });
-  dropZone.addEventListener('drop', (e) => {
-    const file = e.dataTransfer.files[0];
-    if (file) handleFile(file);
-  });
+  // ── Drop zone ──
+  dropZone.onclick = function() { fileInput.click(); };
+  fileInput.onchange = function(e) { if (e.target.files[0]) handleFile(e.target.files[0]); };
 
-  // Also allow dropping on the presenter view to swap files
-  document.addEventListener('dragover', (e) => e.preventDefault());
-  document.addEventListener('drop', (e) => {
+  dropZone.ondragover = dropZone.ondragenter = function(e) {
+    e.preventDefault(); dropZone.classList.add('drag-over');
+  };
+  dropZone.ondragleave = function(e) {
+    e.preventDefault(); dropZone.classList.remove('drag-over');
+  };
+  dropZone.ondrop = function(e) {
+    e.preventDefault(); dropZone.classList.remove('drag-over');
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  };
+
+  // Allow re-drop on presenter
+  document.ondragover = function(e) { e.preventDefault(); };
+  document.ondrop = function(e) {
     e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file && presenter.classList.contains('active')) handleFile(file);
-  });
+    if (e.dataTransfer.files[0] && presenter.classList.contains('active'))
+      handleFile(e.dataTransfer.files[0]);
+  };
 
-  // ── File handling ──
   function handleFile(file) {
     fileNameEl.textContent = file.name;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        transpileAndRender(e.target.result);
-      } catch (err) {
-        showError(err);
-      }
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      try { transpileAndRender(ev.target.result); }
+      catch (err) { showError(err); }
     };
     reader.readAsText(file);
   }
 
-  // ── Transpile & Render ──
+  // ── Core: Transpile + Render ──
   function transpileAndRender(source) {
-    // Transpile TSX → JS using Sucrase
-    let code;
-    try {
-      // Strip import statements (we provide globals)
-      const stripped = source.replace(/^import\s+.*?[;]\s*$/gm, '')
-                             .replace(/^import\s+.*?from\s+['"].*?['"]\s*;?\s*$/gm, '')
-                             .replace(/^import\s*{[^}]*}\s*from\s*['"].*?['"]\s*;?\s*$/gm, '')
-                             .replace(/^import\s+.*?\n/gm, '');
+    var code;
 
-      const result = Sucrase.transform(stripped, {
-        transforms: ['typescript', 'jsx'],
-        jsxRuntime: 'classic',
-        jsxPragma: 'React.createElement',
-        jsxFragmentPragma: 'React.Fragment',
-        production: true,
+    // 1. Strip imports (we inject globals)
+    var stripped = source
+      .replace(/^\s*import\s[\s\S]*?from\s+['"][^'"]*['"];?\s*$/gm, '')
+      .replace(/^\s*import\s+['"][^'"]*['"];?\s*$/gm, '');
+
+    // 2. Transpile with Babel standalone
+    try {
+      var output = Babel.transform(stripped, {
+        presets: ['react', 'typescript'],
+        plugins: ['transform-modules-commonjs'],
+        filename: 'slides.tsx',
       });
-      code = result.code;
+      code = output.code;
     } catch (err) {
-      showError(new Error('Transpilation failed:\n' + err.message));
+      showError(new Error('Transpilation failed:\n\n' + err.message));
       return;
     }
 
-    // Build a module scope with globals
-    let Component;
+    // 3. Execute in sandbox
+    var Component;
     try {
-      const {
-        createElement, Fragment, useState, useEffect, useRef, useCallback,
-        useMemo, useReducer, useContext, createContext, forwardRef, memo,
-        Children, cloneElement, isValidElement
-      } = React;
+      var _exports = {};
+      var _module = { exports: _exports };
 
-      // Create a module-like scope
-      const moduleExports = {};
-      const fn = new Function(
-        'React','createElement','Fragment',
-        'useState','useEffect','useRef','useCallback','useMemo',
-        'useReducer','useContext','createContext','forwardRef','memo',
-        'Children','cloneElement','isValidElement',
-        'Recharts',
-        'exports',
-        code + '\n;return typeof exports.default !== "undefined" ? exports.default : null;'
-      );
+      var _require = function(name) {
+        if (name === 'react') return React;
+        if (name === 'recharts') return window.Recharts || {};
+        return {};
+      };
 
-      // Rewrite: find `export default` → `exports.default =`
-      // Sucrase converts `export default` to `exports.default =` already
-      Component = fn(
-        React, createElement, Fragment,
-        useState, useEffect, useRef, useCallback, useMemo,
-        useReducer, useContext, createContext, forwardRef, memo,
-        React.Children, React.cloneElement, React.isValidElement,
-        window.Recharts || {},
-        moduleExports
-      );
+      // Babel commonjs transforms `export default X` into `exports["default"] = X`
+      var execFn = new Function('module', 'exports', 'require', code);
+      execFn(_module, _exports, _require);
 
-      if (!Component) {
-        // Fallback: try to find the component from exports
-        Component = moduleExports.default || null;
-      }
+      Component = _module.exports['default'] || _module.exports;
 
-      if (!Component) {
+      if (typeof Component !== 'function') {
         showError(new Error(
-          'No default export found.\n\n' +
-          'Your .tsx file must have a default export, e.g.:\n\n' +
+          'No valid default export found.\n\n' +
+          'Your file must export a React component:\n\n' +
           '  export default function Slides() {\n' +
-          '    return <><div>Slide 1</div><div>Slide 2</div></>;\n' +
+          '    return (\n' +
+          '      <>\n' +
+          '        <div style={{width:"100%",height:"100%"}}>Slide 1</div>\n' +
+          '        <div style={{width:"100%",height:"100%"}}>Slide 2</div>\n' +
+          '      </>\n' +
+          '    );\n' +
           '  }'
         ));
         return;
       }
     } catch (err) {
-      showError(new Error('Runtime error:\n' + err.message + '\n\n' + (err.stack || '')));
+      showError(new Error('Runtime error:\n\n' + err.message));
       return;
     }
 
-    // Render the component to extract slides
-    try {
-      renderSlides(Component);
-    } catch (err) {
-      showError(new Error('Render error:\n' + err.message));
-      return;
-    }
-
-    // Show presenter
-    landing.classList.add('hidden');
-    presenter.classList.add('active');
-    hideError();
+    // 4. Count slides by rendering into a hidden container
+    window.__SlideComp = Component;
+    countSlidesAndShow(Component);
   }
 
-  function renderSlides(Component) {
-    // First, render the full component to a temp container to count children
-    const tempDiv = document.createElement('div');
-    const tempRoot = ReactDOM.createRoot(tempDiv);
-    tempRoot.render(React.createElement(Component));
+  function countSlidesAndShow(Comp) {
+    var box = document.createElement('div');
+    box.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:960px;height:540px;overflow:hidden;';
+    document.body.appendChild(box);
 
-    // We need to figure out the slides. Strategy:
-    // Render the component, then treat each direct child of the root element as a slide.
-    // We'll render it once, read the children, then render each child individually.
+    var root = ReactDOM.createRoot(box);
+    root.render(React.createElement(Comp));
 
-    // Use a wrapper to capture the rendered output
-    let capturedChildren = [];
+    setTimeout(function() {
+      var count = 1;
+      var kids = box.children;
 
-    function SlideExtractor() {
-      const ref = React.useRef(null);
-
-      React.useEffect(() => {
-        if (ref.current) {
-          const kids = ref.current.children;
-          if (kids.length <= 1) {
-            // Single element or fragment - the component itself is one slide
-            slides = [Component];
-          } else {
-            // Multiple children - each is a slide
-            slides = Array.from({ length: kids.length }, (_, i) => i);
-          }
-          currentSlide = 0;
-          updatePresenter();
-        }
-      }, []);
-
-      return React.createElement('div', { ref, style: { display: 'contents' } },
-        React.createElement(Component)
-      );
-    }
-
-    // Render to hidden container to get slide count
-    const hiddenContainer = document.createElement('div');
-    hiddenContainer.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:960px;height:540px;';
-    document.body.appendChild(hiddenContainer);
-    const hiddenRoot = ReactDOM.createRoot(hiddenContainer);
-    hiddenRoot.render(React.createElement(SlideExtractor));
-
-    // Give it a tick to render
-    setTimeout(() => {
-      const wrapper = hiddenContainer.querySelector('div');
-      if (wrapper) {
-        const kids = wrapper.children;
-        const count = Math.max(kids.length, 1);
-        slides = Array.from({ length: count }, (_, i) => i);
-      } else {
-        slides = [0];
+      if (kids.length > 1) {
+        // Fragment rendered multiple direct children
+        count = kids.length;
+      } else if (kids.length === 1 && kids[0].children.length > 1) {
+        // Single wrapper div with multiple children inside
+        count = kids[0].children.length;
       }
 
-      hiddenRoot.unmount();
-      document.body.removeChild(hiddenContainer);
+      root.unmount();
+      document.body.removeChild(box);
 
+      slides = [];
+      for (var i = 0; i < count; i++) slides.push(i);
       currentSlide = 0;
-      window.__SlideComponent = Component;
+
+      landing.classList.add('hidden');
+      presenter.classList.add('active');
+      hideError();
       updatePresenter();
-    }, 50);
+    }, 150);
   }
 
-  // ── Slide renderer ──
-  // We render the full component and show only the Nth child
-  function SlideViewer({ index }) {
-    const Comp = window.__SlideComponent;
-    const containerRef = React.useRef(null);
+  // ── Slide viewer component ──
+  function SlideViewer(props) {
+    var Comp = window.__SlideComp;
+    var ref = React.useRef(null);
+    var idx = props.slideIndex;
 
-    React.useEffect(() => {
-      if (!containerRef.current) return;
-      const kids = containerRef.current.children;
-      for (let i = 0; i < kids.length; i++) {
-        kids[i].style.display = (i === index) ? '' : 'none';
+    React.useEffect(function() {
+      var el = ref.current;
+      if (!el) return;
+
+      var targets;
+      if (el.children.length > 1) {
+        targets = el.children;
+      } else if (el.children.length === 1 && el.children[0].children.length > 1) {
+        targets = el.children[0].children;
+      } else {
+        return; // single slide, nothing to hide
       }
-    }, [index]);
+
+      for (var i = 0; i < targets.length; i++) {
+        targets[i].style.display = (i === idx) ? '' : 'none';
+      }
+    });
 
     return React.createElement('div', {
-      ref: containerRef,
+      ref: ref,
       style: { width: '100%', height: '100%' }
     }, React.createElement(Comp));
   }
 
-  let slideRoot = null;
   function renderCurrentSlide() {
-    if (!slideRoot) {
-      slideRoot = ReactDOM.createRoot(slideContent);
-    }
-    slideRoot.render(React.createElement(SlideViewer, { index: currentSlide }));
+    if (!slideRoot) slideRoot = ReactDOM.createRoot(slideContent);
+    slideRoot.render(
+      React.createElement(SlideViewer, { slideIndex: currentSlide, key: 'slide-' + currentSlide })
+    );
   }
 
-  // ── Presenter update ──
   function updatePresenter() {
-    const total = slides.length;
-    slideCountEl.textContent = (currentSlide + 1) + ' / ' + total;
-
+    slideCountEl.textContent = (currentSlide + 1) + ' / ' + slides.length;
     navLeft.classList.toggle('disabled', currentSlide === 0);
-    navRight.classList.toggle('disabled', currentSlide === total - 1);
+    navRight.classList.toggle('disabled', currentSlide === slides.length - 1);
 
-    // Thumbnails
     thumbStrip.innerHTML = '';
-    for (let i = 0; i < total; i++) {
-      const t = document.createElement('div');
+    for (var i = 0; i < slides.length; i++) {
+      var t = document.createElement('div');
       t.className = 'thumb' + (i === currentSlide ? ' active' : '');
-      t.textContent = (i + 1);
-      t.addEventListener('click', () => goToSlide(i));
+      t.textContent = i + 1;
+      t.dataset.i = i;
+      t.onclick = function(e) { goToSlide(+e.currentTarget.dataset.i); };
       thumbStrip.appendChild(t);
     }
 
@@ -696,89 +493,69 @@
   }
 
   // ── Navigation ──
-  navLeft.addEventListener('click', () => goToSlide(currentSlide - 1));
-  navRight.addEventListener('click', () => goToSlide(currentSlide + 1));
+  navLeft.onclick  = function() { goToSlide(currentSlide - 1); };
+  navRight.onclick = function() { goToSlide(currentSlide + 1); };
 
-  document.addEventListener('keydown', (e) => {
-    if (errorOverlay.style.display !== 'none') {
+  document.onkeydown = function(e) {
+    if (errOverlay.style.display !== 'none') {
       if (e.key === 'Escape') hideError();
       return;
     }
     if (!presenter.classList.contains('active')) return;
 
-    switch (e.key) {
-      case 'ArrowLeft':
-      case 'ArrowUp':
-        e.preventDefault();
-        goToSlide(currentSlide - 1);
-        break;
-      case 'ArrowRight':
-      case 'ArrowDown':
-      case ' ':
-        e.preventDefault();
-        goToSlide(currentSlide + 1);
-        break;
-      case 'Home':
-        e.preventDefault();
-        goToSlide(0);
-        break;
-      case 'End':
-        e.preventDefault();
-        goToSlide(slides.length - 1);
-        break;
-      case 'f':
-      case 'F':
-        toggleFullscreen();
-        break;
-      case 'Escape':
-        if (isFullscreen) toggleFullscreen();
-        break;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault(); goToSlide(currentSlide + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault(); goToSlide(currentSlide - 1);
+    } else if (e.key === 'Home') {
+      e.preventDefault(); goToSlide(0);
+    } else if (e.key === 'End') {
+      e.preventDefault(); goToSlide(slides.length - 1);
+    } else if (e.key === 'f' || e.key === 'F') {
+      toggleFullscreen();
+    } else if (e.key === 'Escape' && isFullscreen) {
+      toggleFullscreen();
     }
-  });
+  };
 
   // ── Fullscreen ──
-  btnFullscreen.addEventListener('click', toggleFullscreen);
-
+  btnFS.onclick = toggleFullscreen;
   function toggleFullscreen() {
     isFullscreen = !isFullscreen;
     presenter.classList.toggle('fullscreen-mode', isFullscreen);
     slideFrame.classList.toggle('fullscreen', isFullscreen);
-
     if (isFullscreen) {
-      document.documentElement.requestFullscreen?.().catch(() => {});
+      document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
     } else {
-      document.exitFullscreen?.().catch(() => {});
+      document.exitFullscreen && document.exitFullscreen();
     }
   }
-
-  document.addEventListener('fullscreenchange', () => {
+  document.onfullscreenchange = function() {
     if (!document.fullscreenElement && isFullscreen) {
       isFullscreen = false;
       presenter.classList.remove('fullscreen-mode');
       slideFrame.classList.remove('fullscreen');
     }
-  });
+  };
 
   // ── New file ──
-  btnNewFile.addEventListener('click', () => {
+  btnNew.onclick = function() {
     if (slideRoot) { slideRoot.unmount(); slideRoot = null; }
-    slides = [];
-    currentSlide = 0;
+    slides = []; currentSlide = 0;
     presenter.classList.remove('active');
     landing.classList.remove('hidden');
     fileInput.value = '';
     if (isFullscreen) toggleFullscreen();
-  });
+  };
 
-  // ── Error handling ──
+  // ── Errors ──
   function showError(err) {
-    errorMessage.textContent = err.message || String(err);
-    errorOverlay.style.display = 'flex';
+    errMsg.textContent = err.message || String(err);
+    errOverlay.style.display = 'flex';
   }
-  function hideError() {
-    errorOverlay.style.display = 'none';
-  }
-  btnDismissErr.addEventListener('click', hideError);
+  function hideError() { errOverlay.style.display = 'none'; }
+  errDismiss.onclick = hideError;
+
 })();
 </script>
 </body>
